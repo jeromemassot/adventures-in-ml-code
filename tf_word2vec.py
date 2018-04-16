@@ -147,7 +147,7 @@ with graph.as_default():
   init = tf.global_variables_initializer()
 
 
-def run(graph, num_steps):
+def run(graph, num_steps, loss_function):
     with tf.Session(graph=graph) as session:
       # We must initialize all variables before we use them.
       init.run()
@@ -161,7 +161,7 @@ def run(graph, num_steps):
 
         # We perform one update step by evaluating the optimizer op (including it
         # in the list of returned values for session.run()
-        _, loss_val = session.run([optimizer, cross_entropy], feed_dict=feed_dict)
+        _, loss_val = session.run([optimizer, loss_function], feed_dict=feed_dict)
         average_loss += loss_val
 
         if step % 2000 == 0:
@@ -187,7 +187,7 @@ def run(graph, num_steps):
 
 num_steps = 100
 softmax_start_time = dt.datetime.now()
-run(graph, num_steps=num_steps)
+run(graph, num_steps=num_steps, loss_function=cross_entropy)
 softmax_end_time = dt.datetime.now()
 print("Softmax method took {} minutes to run 100 iterations".format((softmax_end_time-softmax_start_time).total_seconds()))
 
@@ -214,6 +214,6 @@ with graph.as_default():
 
 num_steps = 50000
 nce_start_time = dt.datetime.now()
-run(graph, num_steps)
+run(graph, num_steps, loss_function=nce_loss)
 nce_end_time = dt.datetime.now()
 print("NCE method took {} minutes to run 100 iterations".format((nce_end_time-nce_start_time).total_seconds()))
